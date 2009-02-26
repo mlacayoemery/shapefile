@@ -1,0 +1,10 @@
+This file contains a description of the data formats relevant for this toolbox.
+
+
+Animeye Data Format
+
+The Animeye data format is in ASCII text and contains tab separated values. It begins with a column header row and is followed by rows of data. The ninth and last column header contains two labels that are in parenthesis and comma separated. These two labels describe the stimulus and the length that it was observed. The rows are of variable width and contain additional cells in the paired format as necessary.
+
+Tobii Data Format
+
+The Tobii data format is in ASCII text and contains tab separated vaules. It begins with twenty-four lines of metadata followed by a column header row and rows of data. 
