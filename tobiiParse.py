@@ -1,10 +1,13 @@
 import sys
-import databasefile
+import ../shp/databasefile
 
-def tobiiParse(inName,outName,dynamicSpecs=False):
-    headerLength=24
+headerLength=24
+
+def tobiiParseFile(inName,outName,dynamicSpecs=False):
+    tobiiParse(open(inName,'r'),open(outName,'wb'),dynamicSpecs)
+
+def tobiiParse(inFile,outFile,dynamicSpecs=False):
     #read in file, remove header, strip and split lines
-    inFile=open(inName,'r')
     lines=[l.replace("\t\n","\n").split("\t") for l in inFile.readlines()[headerLength:]]
     inFile.close()
     header=lines.pop(0)
@@ -23,4 +26,4 @@ if __name__=="__main__":
         dynamicSpecs=True
     else:
         dynamicSpecs=False
-    tobiiParse(inName,outName,dynamicSpecs)
+    tobiiParseFile(inName,outName,dynamicSpecs)
