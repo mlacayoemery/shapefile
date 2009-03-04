@@ -1,4 +1,4 @@
-from ..shp import databasefile
+import databasefile
 
 def filterTable(inName,outName,field,keep=True,equal="#",minimum="#",maximum="#",retype=False):
     filterTableFile(inName,open(outName,"wb"),field,keep,equal,minimum,maximum,retype)
