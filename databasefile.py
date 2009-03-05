@@ -134,6 +134,16 @@ class DatabaseFile:
         else:
             self.readFile(dbffile)
 
+    #accessors
+
+    def __getitem__(self,i):
+        return self.records[i]
+
+    def index(self,s):
+        return self.fieldnames.index(s)
+    
+    #modifiers
+            
     def staticSpecs(self):
         """
         staticSpecs sets the current fieldspecs to all be strings of  the minimum width supporting the current data.
@@ -239,6 +249,8 @@ class DatabaseFile:
             f.seek(seeklength1,1)
             self.records[i].append(f.read(readlength))
             f.seek(seeklength2,1)
+
+    #i/o
 
     def readFile(self,inName):
         """
