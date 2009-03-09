@@ -98,6 +98,24 @@ def hexagonGrid(startX,endX,startY,endY,r):
     return points
 
 #polyline and polygon objects
+def boundingBoxCoordinates(box):
+    x1,y1,x2,y2=box
+    return [(x1,y1),(x1,y2),(x2,y2),(x2,y1)]
+
+def boundingBox(minX,maxX,minY,maxY):
+    return [minX,maxX,minY,maxY]
+
+def extendBoundingBox(box,x,y):
+    if x<box[0]:
+        box[0]=x
+    elif x>box[1]:
+        box[1]=x
+    if y<box[2]:
+        box[2]=y
+    elif y>box[3]:
+        box[3]=y
+    return box
+
 
 def rectangle(x,y,l,w):
     """
