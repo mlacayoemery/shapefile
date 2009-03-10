@@ -297,11 +297,3 @@ class Shapefile:
                 shx.write(struct.pack('>i',totalLength))
                 shx.write(struct.pack('>i',contentLength))
                 totalLength+=contentLength+4
-
-
-if __name__=="__main__":
-    s=Shapefile(1)
-    for p in hexagonCentroids(0,7,0,5,1):
-        s.add([p])
-    s.writeFile("C:/grid")
-
