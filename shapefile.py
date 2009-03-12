@@ -1,7 +1,24 @@
-#Martin Lacayo-Emery
-#12/11/2008
+"""The shapefile class.
 
-import sys, struct
+This class implements ESRI shapefiles as defined in the July 1998 whitepaper.
+
+See http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf
+"""
+__author__ = "Martin Lacayo-Emery <positrons@gmail.com>"
+__date__ = "23 November 2006"
+
+__credits__ = """Arzu \xc7\xf6ltekin, University of Z\xfcrich, project collaborator
+Sara Fabrikant, University of Z\xfcrich, project collaborator
+Andr\xe9 Skupin, San Diego State University, thesis advisor
+University of Z\xfcrich, host institution
+San Diego State University, home institution
+Eidgen\xf6ssischen Stipendienkommission f\xfcr ausl\xe4ndische Studierende, host funding agency
+Fulbright Program, host funding program
+Department of Geography, San Diego State University, home funding
+"""
+
+import sys
+import struct
 import databasefile
 import math
 
@@ -9,8 +26,44 @@ class Shapefile:
     """
     Shapefile class supporting single point and single part polygon shapes.
     Shapes are passed in as a list of points.
+
+    >>> s=Shapefile(1)
+    >>> s.add([(0,0)])
+    >>> s.add([(0,1)])
+    >>> s.add([(1,1)])
+    >>> s.add([(1,0)])
+    >>> len(s)
+    4
+    >>> s[0]
+    (0, 0)
+    >>> import tempfile
+    >>> shp=tempfile.TemporaryFile()
+    >>> shx=tempfile.TemporaryFile()
+    >>> s.write(shp,shx)
+    >>> shp.seek(0,0)
+    >>> shx.close()
+    >>> t=Shapefile(1)
+    >>> len(t)
+    0
+    >>> t.readShp(shp)
+    >>> len(t)
+    4
+    >>> t[1]
+    (0.0, 1.0)
+    >>> shp.close()
     """
+    #constructors
     def __init__(self,shapeType=1):
+        """
+        The constructor function creates an instance of the Shapefile class
+        with an option shapeType parameter. The shapeTypes are coded using
+        integers. Currently only point, polyline, and polygon are supported,
+        which are coded as 1, 3, and 5 respectively. Further development may
+        extend support the remaining shape types, which follow with their
+        coding in paraenthesis: Null Shape (0), MultiPoint (8), PointZ (11),
+        PolyLineZ (13), PolygonZ (15), MultiPointZ (18), PointM (21),
+        PolyLineM (23), PolygonM (25), MultiPointM (28), and MultiPatch (31).
+        """
         Xmin=0
         Ymin=0
         Xmax=0
@@ -44,11 +97,20 @@ class Shapefile:
         
         self.shapes=shapes
         self.table=databasefile.DatabaseFile(["ID"]+fieldnames,[('N', 6, 0)]+fieldspecs,records)
-        
 
+    #accessors
+    def __len__(self):
+        return len(self.shapes)
+
+    def __getitem__(self,i):
+        return self.shapes[i]
+        
+    #modifiers
     def add(self,shape,record=None):
         """
-        Adds a shape object to the shapefile. Adding records not currently supported.
+        Adds a shape object to the shapefile.
+        Shape objects must a list of (x,y) tuples.
+        Adding table records with shapes is not currently supported.
         """
         #adjust the bound box minmums and maximums
         for p in shape:
@@ -75,6 +137,7 @@ class Shapefile:
         else:
             self.table.addRow([len(self.shapes)])
 
+    #i/o
     def readFile(self,inName):
         inShp=open(inName+".shp",'rb')
         self.readShp(inShp)
@@ -162,7 +225,8 @@ class Shapefile:
         outShx.close()
 
     def write(self,shp,shx):
-        
+        """
+        """
         #shp file header
         #byte 0, File Code
         shp.write(struct.pack('>i', self.fileCode))
@@ -297,3 +361,9 @@ class Shapefile:
                 shx.write(struct.pack('>i',totalLength))
                 shx.write(struct.pack('>i',contentLength))
                 totalLength+=contentLength+4
+
+if __name__ == "__main__":
+    import doctest
+    print
+    doctest.testmod()
+    print
