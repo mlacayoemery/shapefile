@@ -2,19 +2,28 @@ import sys
 import databasefile
 import shapefile
 
+def dbfShapeFile(dbfName,xField,yField,quadrant):
+    dbf=databasefile.DatabaseFile([],[],[],dbfName)
+    xIndex=dbf.index(xField)
+    yIndex=dbf.index(yField)
+    xScale,yScale=[(1,1),(-1,1),(-1,-1),(1,-1)][quadrant-1]
+    
+    s=dbfShape(dbf,xIndex,yIndex,xScale,yScale)
+    shp=open(dbfName[:dbfName.rfind(".")]+".shp",'wb')
+    shx=open(dbfName[:dbfName.rfind(".")]+".shx",'wb')
+    s.write(shp,shx)
+    shp.close()
+    shx.close()
 
-inName="D:/work/uzh/cgis/02/02_01_ap01Ng-All-Data.dbf"
-outName="D:/work/uzh/cgis/02/02_01_ap01Ng-All-Data"
+def dbfShape(dbf,xIndex,yIndex,xScale=1,yScale=1):
+    s=shapefile.Shapefile(1)
+    for row in dbf:
+        s.add([(float(row[xIndex])*xScale,float(row[yIndex])*yScale)])
+    return s
 
-d=databasefile.DatabaseFile([],[],[])
-d.addFileColumn(inName, "GazePointX")
-d.addFileColumn(inName, "GazePointY")
-#d.writeFile("D:/work/uzh/cgis/02/shape.dbf")
-
-##s=shapefile.Shapefile()
-##
-##for x,y in d.records:
-##    s.add([(float(x),float(y))])
-##shp=open("D:/work/uzh/cgis/02/02_01_ap01Ng-All-Data.shp","wb")
-##shx=open("D:/work/uzh/cgis/02/02_01_ap01Ng-All-Data.shx","wb")
-##s.write(shp,shx)
+if __name__=="__main__":
+    dbfName=sys.argv[1]
+    xField=sys.argv[2]
+    yField=sys.argv[3]
+    quadrant=int(sys.argv[4])
+    dbfShapeFile(dbfName,xField,yField,quadrant)
