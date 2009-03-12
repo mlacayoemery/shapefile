@@ -1,12 +1,28 @@
-#Martin Lacayo-Emery
-#11/20/2008
+"""The datbasefile class.
 
+This class expands on the writer and reader created by Raymond Hettinger.
+
+See http://code.activestate.com/recipes/362715/
+"""
+__author__ = "Martin Lacayo-Emery <positrons@gmail.com>"
+__date__ = "23 November 2006"
+
+__credits__ = """Arzu \xc7\xf6ltekin, University of Z\xfcrich, project collaborator
+Sara Fabrikant, University of Z\xfcrich, project collaborator
+Andr\xe9 Skupin, San Diego State University, thesis advisor
+University of Z\xfcrich, host institution
+San Diego State University, home institution
+Eidgen\xf6ssischen Stipendienkommission f\xfcr ausl\xe4ndische Studierende, host funding agency
+Fulbright Program, host funding program
+Department of Geography, San Diego State University, home funding
+"""
 import struct
 import datetime
 import decimal
 import itertools
 import string
 
+#helper functions
 def spec(valueString):
     """
     spec(valueString) accepts a string and returns the data type, width, and precision.
@@ -125,6 +141,43 @@ class DatabaseFile:
     """
     DatabaseFile is a class that stores a DBF file
 
+    >>> d=DatabaseFile([],[],[])
+    >>> d.addField('ID',("N",1,0))
+    >>> d.fieldnames
+    ['ID']
+    >>> d=DatabaseFile(["Int","Float","String"],[("N",5,0),("N",5,3),("C",5,0)],[[12345,12.45,"12345"]])
+    >>> d.refreshSpecs()
+    >>> d.fieldspecs
+    [('N', 5, 0), ('N', 5, 3), ('N', 5, 0)]
+    >>> d.addRow(["Hello","World", "!"])
+    >>> d.refreshSpecs()
+    >>> d.fieldspecs
+    [('C', 5, 0), ('C', 5, 0), ('C', 5, 0)]
+    >>> d.records.pop(1)
+    ['Hello', 'World', '!']
+    >>> d.refreshSpecs()
+    >>> d.fieldspecs
+    [('N', 5, 0), ('N', 5, 3), ('N', 5, 0)]
+    >>> fieldnames=["Int","Float","String"]
+    >>> fieldspecs=[("N",5,0),("N",5,3),("C",13,0)]
+    >>> records=[["12345","12.45","one two three"]]
+    >>> d=DatabaseFile(fieldnames,fieldspecs,records)
+    >>> d.refreshSpecs()
+    >>> import tempfile
+    >>> dbf=tempfile.TemporaryFile()
+    >>> d.write(dbf)
+    >>> dbf.seek(0,0)
+    >>> e=DatabaseFile([],[],[])
+    >>> e.records=list(e.read(dbf))
+    >>> e.fieldnames=e.records.pop(0)
+    >>> e.fieldspecs=e.records.pop(0)
+    >>> e.fieldnames==fieldnames
+    True
+    >>> e.fieldspecs==fieldspecs
+    True
+    >>> e.records==records
+    True
+    >>> dbf.close()
     """
     def __init__(self,fieldnames,fieldspecs,records,dbffile=None):
         if dbffile==None:
@@ -157,32 +210,7 @@ class DatabaseFile:
 
     def refreshSpecs(self):
         """
-        >>> d=DatabaseFile(["Int","Float","String"],[("N",5,0),("N",5,3),("C",5,0)],[[12345,12.45,"12345"]])
-        >>> d.refreshSpecs()
-        >>> d.fieldspecs
-        [('N', 5, 0), ('N', 5, 3), ('N', 5, 0)]
-        >>> d.addRow(["Hello","World", "!"])
-        >>> d.refreshSpecs()
-        >>> d.fieldspecs
-        [('C', 5, 0), ('C', 5, 0), ('C', 5, 0)]
-        >>> d.records.pop(1)
-        ['Hello', 'World', '!']
-        >>> d.refreshSpecs()
-        >>> d.fieldspecs
-        [('N', 5, 0), ('N', 5, 3), ('N', 5, 0)]
-        >>> fieldnames=["Int","Float","String"]
-        >>> fieldspecs=[("N",5,0),("N",5,3),("C",13,0)]
-        >>> records=[["12345","12.45","one two three"]]
-        >>> filename="C:/dbfwriteFile.dbf"
-        >>> d=DatabaseFile(fieldnames,fieldspecs,records)
-        >>> d.refreshSpecs()
-        >>> d.writeFile(filename)
-        >>> e=DatabaseFile([],[],[])
-        >>> e.readFile(filename)
-        >>> e.fieldnames==fieldnames
-        True
-        >>> e.records==records
-        True
+
         """
         #if rows in table
         if len(self.records) > 0:
@@ -201,7 +229,13 @@ class DatabaseFile:
         self.fieldnames.extend(other.fieldnames)
         self.fieldspecs.extend(other.fieldspecs)
         for i in range(len(self.records)):
-            self.records[i].extend(other.records[i])                
+            self.records[i].extend(other.records[i])
+
+    def addField(self,fieldname,fieldspec):
+        self.fieldnames.append(fieldname)
+        self.fieldspecs.append(fieldspec)
+        for row in self.records:
+            row.append("")
 
     def addColumn(self,fieldname,fieldspec,record):
         if len(record)!=len(self.records):
@@ -254,21 +288,7 @@ class DatabaseFile:
 
     def readFile(self,inName):
         """
-        readFile reads a DBF file from the specified path
-        >>> fieldnames=["Int","Float","String"]
-        >>> fieldspecs=[("N",5,0),("N",5,3),("C",5,0)]
-        >>> records=[["12345","12.45","12345"]]
-        >>> filename="C:/dbfwriteFile.dbf"
-        >>> d=DatabaseFile(fieldnames,fieldspecs,records)
-        >>> d.writeFile(filename)
-        >>> e=DatabaseFile([],[],[])
-        >>> e.readFile(filename)
-        >>> e.fieldnames==fieldnames
-        True
-        >>> e.fieldspecs==fieldspecs
-        True
-        >>> e.records==records
-        True
+        readFile reads a DBF file from the specified path        
         """        
         inFile=open(inName,'rb')
         self.records=list(self.read(inFile))
@@ -335,11 +355,6 @@ class DatabaseFile:
     def writeFile(self,outName):
         """
         writeFile writes a DBF file to the specified path
-        >>> fieldnames=["Int","Float","String"]
-        >>> fieldspecs=[("N",5,0),("N",5,3),("C",5,0)]
-        >>> records=[[12345,12.45,"12345"]]
-        >>> d=DatabaseFile(fieldnames,fieldspecs,records)
-        >>> d.writeFile("C:/dbfwriteFile.dbf")
         """
         outFile=open(outName,'wb')
         self.write(outFile)
