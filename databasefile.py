@@ -378,6 +378,9 @@ class DatabaseFile:
         Records can be an iterable over the records (sequences of field values).
         
         """
+        charmap=string.maketrans(string.punctuation+string.whitespace,
+                             " "*(len(string.punctuation)+len(string.whitespace)))
+        self.fieldnames=[fieldname[:10].translate(charmap).replace(" ","") for fieldname in self.fieldnames]
         # header info
         ver = 3
         now = datetime.datetime.now()

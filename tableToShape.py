@@ -1,5 +1,5 @@
-from ..shp import shapefile
-from ..shp import databasefile
+import shapefile
+import databasefile
 
 def TableToShape(inName,xField,yField,outName,quadrant,shape,changeTypes):
     #read in data table
@@ -37,7 +37,7 @@ def TableToShape(inName,xField,yField,outName,quadrant,shape,changeTypes):
         yScale=-1
 
     #create geometry
-    if shape=="point":
+    if shape==1:
         #add points to shapefile
         s=shapefile.Shapefile(shapeType=1)
         for l in inFile.records:
