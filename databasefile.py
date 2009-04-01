@@ -194,6 +194,13 @@ class DatabaseFile:
 
     def index(self,s):
         return self.fieldnames.index(s)
+
+    def find(self,fieldIndex,value):
+        value=str(value).strip()
+        for id,row in enumerate(self.records):
+            if row[fieldIndex].strip()==value:
+                return id
+        raise ValueError, "Value \""+value+"\" not found."
     
     #modifiers
             

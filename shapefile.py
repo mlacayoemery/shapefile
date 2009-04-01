@@ -221,6 +221,8 @@ class Shapefile:
                     
         
     def writeFile(self,outName):
+        if outName[outName.rfind("."):]==".shp":
+            outName=outName[:outName.rfind(".")]
         outShp=open(outName+".shp",'wb')
         outShx=open(outName+".shx",'wb')
         outDbf=open(outName+".dbf",'wb')
