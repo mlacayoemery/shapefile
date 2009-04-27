@@ -190,34 +190,31 @@ class Shapefile:
                 self.add([(x,y)])
                                
         elif self.shapeType==5 or self.shapeType==3:
-            raise ValueError, "Sorry only poiny reading is currently supported."
-##            while inShp.tell()<(size*2):
-##                id,=struct.unpack('>i',inShp.read(4))
-##                length,=struct.unpack('>i',inShp.read(4))
-##                shapeType,=struct.unpack('<i',inShp.read(4))
-##                Xmin,=struct.unpack('<d',inShp.read(8))
-##                Ymin,=struct.unpack('<d',inShp.read(8))
-##                Xmax,=struct.unpack('<d',inShp.read(8))
-##                Ymax,=struct.unpack('<d',inShp.read(8))
-##                numParts,=struct.unpack('<i',inShp.read(4))
-##                numPoints,=struct.unpack('<i',inShp.read(4))
-##
-##                numParts+=1
-##                if numParts==1:
-##                    raise ValueError, "Sorry multipart shapes are not supported."
-##
-##                parts=[]
-##                print "Here"
-##                for i in range(numParts):
-##                    parts.append(struct.unpack('<i',inShp.read(4)))
-##
-##                points=[]
-##                for i in range(numPoints):
-##                    x,=struct.unpack('<d',inShp.read(8))
-##                    y,=struct.unpack('<d',inShp.read(8))
-##                    points.append((x,y))
-##                print points
-##                self.add(points)
+            #raise ValueError, "Sorry only poiny reading is currently supported."
+            while inShp.tell()<(size*2):
+                id,=struct.unpack('>i',inShp.read(4))
+                length,=struct.unpack('>i',inShp.read(4))
+                shapeType,=struct.unpack('<i',inShp.read(4))
+                Xmin,=struct.unpack('<d',inShp.read(8))
+                Ymin,=struct.unpack('<d',inShp.read(8))
+                Xmax,=struct.unpack('<d',inShp.read(8))
+                Ymax,=struct.unpack('<d',inShp.read(8))
+                numParts,=struct.unpack('<i',inShp.read(4))
+                numPoints,=struct.unpack('<i',inShp.read(4))
+
+                if numParts!=1:
+                    raise ValueError, "Sorry multipart shapes are not supported."
+
+                parts=[]
+                for i in range(numParts):
+                    parts.append(struct.unpack('<i',inShp.read(4)))
+
+                points=[]
+                for i in range(numPoints):
+                    x,=struct.unpack('<d',inShp.read(8))
+                    y,=struct.unpack('<d',inShp.read(8))
+                    points.append((x,y))
+                self.add(points)
                     
         
     def writeFile(self,outName):
