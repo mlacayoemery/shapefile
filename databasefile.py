@@ -228,7 +228,7 @@ class DatabaseFile:
 
     def extend(self,other):
         """
-        Plus equals
+        extends each row with the row of another table
         """
         if len(self.records)!=len(other.records):
             raise ValueError, "The number of rows do not match."
@@ -238,6 +238,16 @@ class DatabaseFile:
         for i in range(len(self.records)):
             self.records[i].extend(other.records[i])
 
+    def append(self,other):
+        """
+        appends all the rows from another table to this table
+        """
+        if len(self.fieldnames)!=len(other.fieldnames):
+            raise ValueError, "The number of columns do not match."
+
+        self.fieldspecs=integratespecs(self.fieldspecs,other.fieldspecs)
+        self.records.extend(other.records)
+        
     def addField(self,fieldname,fieldspec):
         self.fieldnames.append(fieldname)
         self.fieldspecs.append(fieldspec)
