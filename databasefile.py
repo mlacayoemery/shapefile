@@ -303,6 +303,19 @@ class DatabaseFile:
         self.fieldspecs=self.records.pop(0)
         inFile.close()
 
+    def readSV(self,inName,separator):
+        inFile=open(inName,'r')
+        self.fieldnames=inFile.readline().strip().split(separator)
+        self.records=[row.strip().split(separator) for row in inFile.readlines()]
+        inFile.close()
+        self.staticSpecs()
+
+    def readCSV(self,inName):
+        self.readSV(inName,",")
+        
+    def readTSV(self,inName):
+        self.readSV(inName,"\t")
+    
     def read(self,f):
         """Returns an iterator over records in a Xbase DBF file.
 
