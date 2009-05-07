@@ -110,6 +110,9 @@ class Shapefile:
 
     def __getitem__(self,i):
         return self.shapes[i]
+
+    def index(self,fieldname):
+        return self.table.index(fieldname)
         
     #modifiers
     def add(self,shape,record=None):
@@ -145,11 +148,14 @@ class Shapefile:
 
     #i/o
     def readFile(self,inName):
+        if inName[inName.rfind("."):]==".shp":
+            inName=inName[:inName.rfind(".")]
+       
         inShp=open(inName+".shp",'rb')
         self.readShp(inShp)
         inShp.close()
         
-        self.table=databasefile.DatabaseFile([],[],[]).readFile(inName+".dbf")
+        self.table=databasefile.DatabaseFile([],[],[],inName+".dbf")
 
     def readShp(self,inShp):
         #shp file header
