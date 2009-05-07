@@ -187,6 +187,9 @@ class DatabaseFile:
         else:
             self.readFile(dbffile)
 
+    def __len__(self):
+        return len(self.records)
+
     #accessors
 
     def __getitem__(self,i):
@@ -252,7 +255,7 @@ class DatabaseFile:
         self.fieldnames.append(fieldname)
         self.fieldspecs.append(fieldspec)
         for row in self.records:
-            row.append("")
+            row.append("")            
 
     def addColumn(self,fieldname,fieldspec,record):
         if len(record)!=len(self.records):
@@ -267,6 +270,15 @@ class DatabaseFile:
             self.records.append(record)
         else:
             raise ValueError, "The record does have the same number of columns as the table."
+
+    def removeColumn(self,columnIndex):
+        self.fieldnames.pop(columnIndex)
+        self.fieldspecs.pop(columnIndex)
+        for row in self.records:
+            row.pop(columnIndex)
+
+    def removeRow(self,rowIndex):
+        self.records.pop(rowIndex)
 
     def addFileColumn(self, inName,colName):
         """
