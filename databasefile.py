@@ -274,11 +274,13 @@ class DatabaseFile:
     def removeColumn(self,columnIndex):
         self.fieldnames.pop(columnIndex)
         self.fieldspecs.pop(columnIndex)
+        column=[]
         for row in self.records:
-            row.pop(columnIndex)
+            column.append(row.pop(columnIndex))
+        return column
 
     def removeRow(self,rowIndex):
-        self.records.pop(rowIndex)
+        return self.records.pop(rowIndex)
 
     def addFileColumn(self, inName,colName):
         """
@@ -420,9 +422,9 @@ class DatabaseFile:
         Records can be an iterable over the records (sequences of field values).
         
         """
-        charmap=string.maketrans(string.punctuation+string.whitespace,
-                             " "*(len(string.punctuation)+len(string.whitespace)))
-        self.fieldnames=[fieldname[:10].translate(charmap).replace(" ","") for fieldname in self.fieldnames]
+        charmap=string.maketrans(string.punctuation.replace("_","")+string.whitespace,
+                             " "*(len(string.punctuation)+len(string.whitespace)-1))
+        self.fieldnames=[fieldname[:14].translate(charmap).replace(" ","") for fieldname in self.fieldnames]
         # header info
         ver = 3
         now = datetime.datetime.now()
