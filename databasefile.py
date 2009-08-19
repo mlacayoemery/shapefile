@@ -321,11 +321,11 @@ class DatabaseFile:
 
         #typecast compartors, just in case
         if equal != None:
-            equal=fieldType(equal)
+            equal=fieldType(equal.strip())
         if minimum != None:
-            minimum=fieldType(minimum)
+            minimum=fieldType(minimum.strip())
         if maximum!=None:
-            maximum=fieldType(maximum)
+            maximum=fieldType(maximum.strip())
             
         #apply criteria    
         if selection:
