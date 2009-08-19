@@ -315,6 +315,41 @@ class DatabaseFile:
             self.records[i].append(f.read(readlength))
             f.seek(seeklength2,1)
 
+    def select(self,fieldIndex,equal=None,minimum=None,maximum=None,selection=True):
+        #get field type for typecasting comparisons
+        fieldType=specType(self.fieldspecs[fieldIndex])
+
+        #typecast compartors, just in case
+        if equal != None:
+            equal=fieldType(equal)
+        if minimum != None:
+            minimum=fieldType(minimum)
+        if maximum!=None:
+            maximum=fieldType(maximum)
+            
+        #apply criteria    
+        if selection:
+            for i in range(len(self)-1,-1,-1):
+                temp=fieldType(self.records[i][fieldIndex].strip())
+                if equal != None and temp == equal:
+                    pass
+                elif minimum != None and temp < minimum:
+                    self.records.pop(i)
+                elif maximum != None and temp > maximum:
+                    self.records.pop(i)
+        else:
+            for i in range(len(self)-1,-1,-1):
+                temp=fieldType(self.records[i][fieldIndex].strip())
+                if equal != None and temp == equal:
+                    self.records.pop(i)
+                elif minimum != None and temp <= minimum:
+                    self.records.pop(i)
+                elif maximum != None and temp >= maximum:
+                    self.records.pop(i)            
+
+        
+        
+
     #i/o
 
     def readFile(self,inName):
@@ -424,7 +459,7 @@ class DatabaseFile:
         """
         charmap=string.maketrans(string.punctuation.replace("_","")+string.whitespace,
                              " "*(len(string.punctuation)+len(string.whitespace)-1))
-        self.fieldnames=[fieldname[:14].translate(charmap).replace(" ","") for fieldname in self.fieldnames]
+        self.fieldnames=[fieldname[:10].translate(charmap).replace(" ","") for fieldname in self.fieldnames]
         # header info
         ver = 3
         now = datetime.datetime.now()
