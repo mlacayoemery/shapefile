@@ -501,6 +501,15 @@ class DatabaseFile:
         # End of file
         f.write('\x1A')
 
+    def writeSV(self,outName,separator,alternate=""):
+        outFile=open(outName,'w')
+        for row in self.records:
+            outFile.write(separator.join([f.strip().replace(separator,alternate) for f in row])+",\n")
+        outFile.close()
+                
+    def writeCSV(self,outName):
+        self.writeSV(outName,", ")
+            
 if __name__ == "__main__":
     import doctest
     print
