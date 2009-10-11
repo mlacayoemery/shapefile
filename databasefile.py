@@ -457,9 +457,33 @@ class DatabaseFile:
         Records can be an iterable over the records (sequences of field values).
         
         """
+        #remove invlaid characters
         charmap=string.maketrans(string.punctuation.replace("_","")+string.whitespace,
                              " "*(len(string.punctuation)+len(string.whitespace)-1))
-        self.fieldnames=[fieldname[:10].translate(charmap).replace(" ","") for fieldname in self.fieldnames]
+        self.fieldnames=[fieldname.translate(charmap).replace(" ","") for fieldname in self.fieldnames]
+
+        #count number of field name stems
+        nameset=set([name[:10] for name in self.fieldnames])
+        namedict=dict(zip(nameset,[0]*len(nameset)))
+        countdict=dict(zip(nameset,[0]*len(nameset)))
+        for name in self.fieldnames:
+            stem=name[:10]
+            namedict[stem]=namedict[stem]+1
+            countdict[stem]=countdict[stem]+1
+        
+        #enumerate column names if necessary
+        tempnames=self.fieldnames
+        tempnames.reverse()
+        for id,name in enumerate(tempnames):
+            stem=name[:10]
+            if namedict[stem]>1:
+                tempnames[id]=stem[:9]+str(countdict[stem])
+                countdict[stem]=countdict[stem]-1
+            else:
+                tempnames[id]=stem
+        tempnames.reverse()
+        self.fieldnames=tempnames
+
         # header info
         ver = 3
         now = datetime.datetime.now()
