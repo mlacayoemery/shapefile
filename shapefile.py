@@ -317,7 +317,7 @@ class Shapefile:
             for id,p in enumerate(self.shapes):
                 #record header
                 #record numbers start at 1
-                shp.write(struct.pack('>i',id))
+                shp.write(struct.pack('>i',id+1))
                 #content length
                 shp.write(struct.pack('>i',contentLength))
 
@@ -339,7 +339,7 @@ class Shapefile:
                 contentLength=24+(8*len(s))
                 #record header
                 #record numbers start at 1
-                shp.write(struct.pack('>i',id))
+                shp.write(struct.pack('>i',id+1))
                 #content length
                 shp.write(struct.pack('>i',contentLength))
 
