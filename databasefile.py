@@ -206,6 +206,11 @@ class DatabaseFile:
         raise ValueError, "Value \""+value+"\" not found."
     
     #modifiers
+    def typecast(self):
+        casting=typelist(self.fieldspecs)
+        for rowID,row in enumerate(self.records):
+            for colID,value in enumerate(row):
+                self.records[rowID][colID]=casting[colID](value)
             
     def staticSpecs(self):
         """
