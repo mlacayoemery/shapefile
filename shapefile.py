@@ -142,7 +142,7 @@ class Shapefile:
 
         #assign the passed in record, or generate an id
         if record:
-            raise ValueError, "Passing in table records is not currently supported"
+            self.table.addRow(record)
         else:
             self.table.addRow([len(self.shapes)])
 
