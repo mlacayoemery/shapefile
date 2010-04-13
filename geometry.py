@@ -64,21 +64,54 @@ def relative(p1,p2):
 
 #point objects
 
-def hexagonCentroid(x,y,originX=0,originY=0,r=1):
+def hexagonCentroid(x,y,originX=0,originY=0,r=1,quadrant=1):
     """
     Returns the coordinate for a hexagon centroid
     """
-    if (y+2)%2:
-        return (originX+((x+0.5)*r),originY-(y*r*(0.75**0.5)))
+    if quadrant==1:
+        xscale=1
+        yscale=1
+    elif quadrant==4:
+        xscale=1
+        yscale=-1
+    elif quadrant==2:
+        xscale=-1
+        yscale=1
+    elif quadrant==3:
+        xscale=1
+        yscale=-1
     else:
-        return (originX+(x*r),originY-(y*r*(0.75**0.5)))
+        raise ValueError, str(quadrant)+" invalid quadarant. Must be 1, 2, 3, or 4."
+        
+    if (y+1)%2==1:
+        return (originX+((x+0.5)*r*xscale),originY+(y*r*(0.75**0.5)*yscale))
+    else:
+        return (originX+(x*r*xscale),originY+(y*r*(0.75**0.5)*yscale))
     
-def hexagonGrid(startX,endX,startY,endY,r):
+def hexagonGrid(startX,endX,startY,endY,r,quadrant=1):
     """
     Returns a grid of hexagon centroids
     """
     deltaY=r*(0.75**0.5)
     deltaX=float(r)
+
+    if quadrant==1:
+        xscale=1
+        yscale=1
+    elif quadrant==4:
+        xscale=1
+        yscale=-1
+    elif quadrant==2:
+        xscale=-1
+        yscale=1
+    elif quadrant==3:
+        xscale=-1
+        yscale=-1
+    else:
+        raise ValueError, str(quadrant)+" invalid quadarant. Must be 1, 2, 3, or 4."
+
+    deltaX=deltaX*xscale
+    deltaY=deltaY*yscale
 
     #set the orgin
     hexX=startX
@@ -86,14 +119,14 @@ def hexagonGrid(startX,endX,startY,endY,r):
 
     points=[]
     for y in range(startY,endY):
-        if (y-startY+2)%2:
+        if (y-startY+2)%2==1:
             hexX=startX+(0.5*deltaX)
         else:
             hexX=startX
         for x in range(startX,endX):
             points.append((hexX,hexY))
             hexX+=deltaX
-        hexY-=deltaY
+        hexY+=deltaY
 
     return points
 
