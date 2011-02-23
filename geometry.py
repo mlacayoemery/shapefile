@@ -71,22 +71,22 @@ def hexagonCentroid(x,y,originX=0,originY=0,r=1,quadrant=1):
     if quadrant==1:
         xscale=1
         yscale=1
-    elif quadrant==4:
-        xscale=1
-        yscale=-1
     elif quadrant==2:
         xscale=-1
         yscale=1
     elif quadrant==3:
+        xscale=-1
+        yscale=-1
+    elif quadrant==4:
         xscale=1
         yscale=-1
     else:
         raise ValueError, str(quadrant)+" invalid quadarant. Must be 1, 2, 3, or 4."
         
     if (y+1)%2==1:
-        return (originX+((x+0.5)*r*xscale),originY+(y*r*(0.75**0.5)*yscale))
-    else:
         return (originX+(x*r*xscale),originY+(y*r*(0.75**0.5)*yscale))
+    else:
+        return (originX+(x*r*xscale)+(0.5*r*xscale),originY+(y*r*(0.75**0.5)*yscale))
     
 def hexagonGrid(startX,endX,startY,endY,r,quadrant=1):
     """
@@ -98,14 +98,14 @@ def hexagonGrid(startX,endX,startY,endY,r,quadrant=1):
     if quadrant==1:
         xscale=1
         yscale=1
-    elif quadrant==4:
-        xscale=1
-        yscale=-1
     elif quadrant==2:
         xscale=-1
         yscale=1
     elif quadrant==3:
         xscale=-1
+        yscale=-1
+    elif quadrant==4:
+        xscale=1
         yscale=-1
     else:
         raise ValueError, str(quadrant)+" invalid quadarant. Must be 1, 2, 3, or 4."
