@@ -28,6 +28,8 @@ shapeTypes= {"Null Shape":0,"Point":1,"PolyLine":3,"Polygon":5,
              "PolyLineM":23,"PolygonM":25,"MultiPointM":28,
              "MultiPatch":31}
 
+idRow=True
+
 class Shapefile:
     """
     Shapefile class supporting single point and single part polygon shapes.
@@ -102,8 +104,11 @@ class Shapefile:
             raise ValueError, "The number of shapes and table records must match."
         
         self.shapes=shapes
-        self.table=databasefile.DatabaseFile(["ID"]+fieldnames,[('N', 6, 0)]+fieldspecs,records)
-
+        if idRow:
+            self.table=databasefile.DatabaseFile(["ID"]+fieldnames,[('N', 6, 0)]+fieldspecs,records)
+        else:
+            self.table=databasefile.DatabaseFile(fieldnames,fieldspecs,records)
+            
     #accessors
     def __len__(self):
         return len(self.shapes)
@@ -142,9 +147,15 @@ class Shapefile:
 
         #assign the passed in record, or generate an id
         if record:
-            self.table.addRow(record)
+            if idRow:
+                self.table.addRow([len(self.shapes)]+record)
+            else:
+                self.table.addRow(record)
         else:
-            self.table.addRow([len(self.shapes)])
+            if idRow:
+                self.table.addRow([len(self.shapes)])
+            else:
+                raise ValueError, "You must supply a table record for each shape or enable idRow."
 
     #i/o
     def readFile(self,inName):
